@@ -30,7 +30,8 @@ try:
         plt.pause(0.0001)
 
 except KeyboardInterrupt:
-        print("CTRL-C: Program Stopping via Keyboard Interrupt...")
+    u2f.close()
+    print("CTRL-C: Program Stopping via Keyboard Interrupt...")
 
 finally:
         print("Exiting Loop") 
