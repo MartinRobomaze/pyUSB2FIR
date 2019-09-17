@@ -1,10 +1,7 @@
-#!usr/bin/python
-
 import matplotlib
-#matplotlib.use('GTKAgg') 
+# matplotlib.use('GTKAgg')
 import matplotlib.pyplot as plt
 from pyusb2fir import USB2FIR
-import numpy as np
 
 u2f = USB2FIR()
 frame = u2f.initializeFrame()
@@ -12,14 +9,14 @@ frame = u2f.initializeFrame()
 plt.ion()
 
 ir = frame.reshape((24, 32))
-graph = plt.imshow(ir,interpolation='none')
+graph = plt.imshow(ir, interpolation='none')
 
 plt.colorbar()
-plt.clim(18,35)
+plt.clim(18, 35)
 plt.draw()
 
 try:
-    while(1):
+    while 1:
 
         u2f.updateFrame(frame)
 
@@ -34,6 +31,7 @@ except KeyboardInterrupt:
     print("CTRL-C: Program Stopping via Keyboard Interrupt...")
 
 finally:
-        print("Exiting Loop") 
+    u2f.close()
+    print("Exiting Loop")
 
 

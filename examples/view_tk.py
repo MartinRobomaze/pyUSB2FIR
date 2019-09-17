@@ -1,7 +1,8 @@
-import Tkinter as tk
-import Queue
+import tkinter as tk
+import queue
 from pyusb2fir import USB2FIR
 import threading 
+
 
 def rgb(minimum, maximum, value):
     minimum, maximum = float(minimum), float(maximum)
@@ -37,8 +38,7 @@ class TempView(tk.Tk):
         self.label_temp = tk.Label(textvariable=self.tempstr)
         self.label_temp.pack()
 
-
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
 
         self.updateMap()
 
@@ -47,11 +47,10 @@ class TempView(tk.Tk):
         try:
             tempvalues = self.queue.get_nowait()
             self.setTempValues(tempvalues)
-        except Queue.Empty:
+        except queue.Empty:
             pass
 
         self.after(100, self.updateMap)
-
 
     def setTempValues(self, tempvalues):
 
