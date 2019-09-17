@@ -20,7 +20,7 @@ import usb1
 import numpy as np
 
 USB2FIR_VID = 0x04D8
-USB2FIR_PID = 0xEE7D
+USB2FIR_PID = [0xEE7D, 0x003C]
 
 CMD_GET_CAPABILITY = 0
 CMD_ECHO = 1
@@ -46,11 +46,13 @@ def uint4_to_int4(i):
     else:
         return i
 
+
 def uint6_to_int6(i):
     if i > 31:
         return i - 64
     else:
         return i
+
 
 def uint8_to_int8(i):
     if i > 127:
@@ -58,11 +60,13 @@ def uint8_to_int8(i):
     else:
         return i
 
+
 def uint10_to_int10(i):
     if i > 511:
         return i - 1024
     else:
         return i
+
 
 def uint16_to_int16(i):
     if i > 32767:
@@ -70,17 +74,13 @@ def uint16_to_int16(i):
     else:
         return i
 
+
 class MLXCommonParameters:
-
-
     def __init__(self, eepromdata):
-
-
         # extract VDD sensor parameters
 
         self.kVdd = uint8_to_int8(eepromdata[0x33] >> 8) * 32
         self.vdd25 = ((eepromdata[0x33] & 0xff) - 256) * 32 - 8192
-
 
         # extract Ta sensor parameters
 
@@ -97,7 +97,6 @@ class MLXCommonParameters:
         self.vPTAT25 = uint16_to_int16(eepromdata[0x31])
 
         self.alphaPTAT = (eepromdata[0x10] >> 12) / 4.0 + 8.0
-
 
         # extract offset
 
@@ -258,8 +257,14 @@ class USB2FIR(object):
         Initialize and open connection to USB2FIR.
         """
         ctx = usb1.LibUSBContext()
-        self.usbdev = ctx.getByVendorIDAndProductID(USB2FIR_VID, USB2FIR_PID)
-        self.usbhandle = self.usbdev.open()
+
+        try:
+            self.usbdev = ctx.getByVendorIDAndProductID(USB2FIR_VID, USB2FIR_PID[0])
+            self.usbhandle = self.usbdev.open()
+        except AttributeError:
+            self.usbdev = ctx.getByVendorIDAndProductID(USB2FIR_VID, USB2FIR_PID[1])
+            self.usbhandle = self.usbdev.open()
+
         self.usbhandle.claimInterface(0)
         self.i2caddress = i2caddress
 
@@ -411,4 +416,4 @@ class USB2FIR(object):
     def close(self):
         self.usbhandle.close()
 
-            
+
