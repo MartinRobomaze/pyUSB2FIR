@@ -95,5 +95,3 @@ t.start()
 
 app.mainloop()
 t.do_run = False
-
-u2f.close()
