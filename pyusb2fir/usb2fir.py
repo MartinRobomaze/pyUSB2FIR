@@ -20,7 +20,7 @@ import numpy as np
 import usb1
 
 USB2FIR_VID = 0x04D8
-USB2FIR_PID = [0xEE7D, 0x003C]
+USB2FIR_PID = 0xEE7D
 
 CMD_GET_CAPABILITY = 0
 CMD_ECHO = 1
@@ -101,9 +101,9 @@ class MLXCommonParameters:
         # extract offset
 
         offsetAverage = uint16_to_int16(eepromdata[0x11])
-        occRowScale = (eepromdata[0x10] & 0x0F00) >> 8;
-        occColumnScale = (eepromdata[0x10] & 0x00F0) >> 4;
-        occRemScale = eepromdata[0x10] & 0x000F;
+        occRowScale = (eepromdata[0x10] & 0x0F00) >> 8
+        occColumnScale = (eepromdata[0x10] & 0x00F0) >> 4
+        occRemScale = eepromdata[0x10] & 0x000F
 
         occRow = []
         for i in range(24):
@@ -227,7 +227,7 @@ class MLXCommonParameters:
 
         # extract the Kv CP coefficient
 
-        kvScale = (eepromdata[0x38] & 0x0F00) >> 8;
+        kvScale = (eepromdata[0x38] & 0x0F00) >> 8
         self.cpKv = uint8_to_int8((eepromdata[0x3B] & 0xFF00) >> 8)
         self.cpKv = (self.cpKv + 0.0) / (1 << kvScale)
 
@@ -256,14 +256,10 @@ class USB2FIR(object):
         """
         Initialize and open connection to USB2FIR.
         """
-        ctx = usb1.LibUSBContext()
+        ctx = usb1.USBContext()
 
-        try:
-            self.usbdev = ctx.getByVendorIDAndProductID(USB2FIR_VID, USB2FIR_PID[0])
-            self.usbhandle = self.usbdev.open()
-        except AttributeError:
-            self.usbdev = ctx.getByVendorIDAndProductID(USB2FIR_VID, USB2FIR_PID[1])
-            self.usbhandle = self.usbdev.open()
+        self.usbdev = ctx.getByVendorIDAndProductID(USB2FIR_VID, USB2FIR_PID)
+        self.usbhandle = self.usbdev.open()
 
         self.usbhandle.claimInterface(0)
         self.i2caddress = i2caddress
@@ -294,7 +290,6 @@ class USB2FIR(object):
         data = self.usbhandle.controlRead(libusb1.LIBUSB_TYPE_CLASS, CMD_GET_CAPABILITY, 0, 0, 4)
         return data
 
-
     def get_status(self):
         """
         Get status of last transaction.
@@ -304,13 +299,11 @@ class USB2FIR(object):
         data = self.usbhandle.controlRead(libusb1.LIBUSB_TYPE_CLASS, CMD_GET_STATUS, 0, 0, 1)
         return data[0]
 
-
     def start_bootloader(self):
         """
         Jump to bootloader.
         """
         self.usbhandle.controlWrite(libusb1.LIBUSB_TYPE_CLASS, CMD_START_BOOTLOADER, 0x5237, 0, [])        
-
 
     def read_memory(self, startaddress, length):
         """
