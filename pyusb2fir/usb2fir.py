@@ -250,7 +250,6 @@ class MLXCommonParameters:
         self.alphaCorrR[3] = self.alphaCorrR[2] * (1 + self.ksTo[3] * (self.ct[3] - self.ct[2]))
 
 
-
 class USB2FIR(object):
     def __init__(self, i2caddress=0x33, refreshRate=3):
         """
